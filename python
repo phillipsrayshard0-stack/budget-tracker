@@ -1,0 +1,68 @@
+import json
+
+transactions = []
+balance = 0 
+
+def save_data():
+    data = {"balance": balance, "transactions": transactions}
+    with open("budget_data.json", "w") as f:
+        json.dump(data, f)
+        print("Data saved!")
+
+def load_data():
+    global balance, transactions
+    try:
+        with open("budget_data.json", "r") as f:
+            data = json.load(f)
+            balance = data["balance"]
+            transactions = data ["transactions"]
+            print("Data loaded!")
+    except:
+        print("No saved data found, starting fresh.")
+
+def add_income(amount, description):
+    global balance
+    balance += amount 
+    transactions.append({"type": "income", "amount": amount, "description": description})
+    print("Income added! New balance: $" + str(balance))
+    save_data()
+
+def add_expense(amount, description):
+    global balance
+    if amount > balance:
+        print("Not enough balance!")
+    else:
+        balance -= amount
+        transactions.append({"type": "expense", "amount": amount, "description": description})
+        print("Expense added! New balance: $" + str(balance))
+        save_data()
+
+def show_summary():
+    print("\n--- Budget Summary ---")
+    for t in transactions:
+        print(t["type"].upper()+ ": $" + str(t["amount"]) + "-" + t["description"])
+    print("Current Balance: $" + str(balance))
+
+load_data()
+
+while True:
+    print("\n1. Add Income")
+    print("2. Add Expense")
+    print("3. Show Summary")
+    print("4. Quit")
+    choice = input("Choose: ")
+
+    if choice == "1":
+        amt = float(input("Amount:"))
+        desc = input("Description:")
+        add_income(amt, desc)
+    elif choice == "2":
+        amt = float(input("Amount:"))
+        desc = input("Description:")
+        add_expense(amt, desc)
+    elif choice == "3":
+        show_summary()
+    elif choice == "4":
+        break 
+
+
